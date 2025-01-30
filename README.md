@@ -1,32 +1,20 @@
 # 🦜️🔗 Chat LangChain
 
-This repo is an implementation of a locally hosted chatbot specifically focused on question answering over the [LangChain documentation](https://langchain.readthedocs.io/en/latest/).
-Built with [LangChain](https://github.com/hwchase17/langchain/), [FastAPI](https://fastapi.tiangolo.com/), and [Next.js](https://nextjs.org).
+This repo is an implementation of a chatbot specifically focused on question answering over the [LangChain documentation](https://python.langchain.com/).
+Built with [LangChain](https://github.com/langchain-ai/langchain/), [LangGraph](https://github.com/langchain-ai/langgraph/), and [Next.js](https://nextjs.org).
 
 Deployed version: [chat.langchain.com](https://chat.langchain.com)
 
-The app leverages LangChain's streaming support and async API to update the page in real time for multiple users.
+> Looking for the JS version? Click [here](https://github.com/langchain-ai/chat-langchainjs).
 
-## ✅ Running locally
-1. Install backend dependencies: `pip install -r requirements.txt`.
-1. Run `python ingest.py` to ingest LangChain docs data into the Weaviate vectorstore (only needs to be done once).
-   1. You can use other [Document Loaders](https://langchain.readthedocs.io/en/latest/modules/document_loaders.html) to load your own data into the vectorstore.
-1. Run the backend with `make start`.
-   1. Make sure to enter your environment variables to configure the application:
-   ```
-   export OPENAI_API_KEY=
-   export WEAVIATE_URL=
-   export WEAVIATE_API_KEY=
+The app leverages LangChain and LangGraph's streaming support and async API to update the page in real time for multiple users.
 
-   # for tracing
-   export LANGCHAIN_TRACING_V2=true
-   export LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
-   export LANGCHAIN_API_KEY=
-   export LANGCHAIN_PROJECT=
-   ```
-1. Install frontend dependencies by running `cd chat-langchain`, then `yarn`.
-1. Run the frontend with `yarn dev` for frontend.
-1. Open [localhost:3000](http://localhost:3000) in your browser.
+## Running locally
+
+This project is now deployed using [LangGraph Cloud](https://langchain-ai.github.io/langgraph/cloud/), which means you won't be able to run it locally (or without a LangGraph Cloud account). If you want to run it WITHOUT LangGraph Cloud, please use the code and documentation from this [branch](https://github.com/langchain-ai/chat-langchain/tree/langserve).
+
+> [!NOTE]
+> This [branch](https://github.com/langchain-ai/chat-langchain/tree/langserve) **does not** have the same set of features.
 
 ## 📚 Technical description
 
@@ -35,23 +23,23 @@ There are two components: ingestion and question-answering.
 Ingestion has the following steps:
 
 1. Pull html from documentation site as well as the Github Codebase
-2. Load html with LangChain's [RecursiveURLLoader Loader](https://python.langchain.com/docs/integrations/document_loaders/recursive_url_loader)
-2. Transform html to text with [Html2TextTransformer](https://python.langchain.com/docs/integrations/document_transformers/html2text)
+2. Load html with LangChain's [RecursiveURLLoader](https://python.langchain.com/docs/integrations/document_loaders/recursive_url_loader) and [SitemapLoader](https://python.langchain.com/docs/integrations/document_loaders/sitemap)
 3. Split documents with LangChain's [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/text_splitter/langchain.text_splitter.RecursiveCharacterTextSplitter.html)
 4. Create a vectorstore of embeddings, using LangChain's [Weaviate vectorstore wrapper](https://python.langchain.com/docs/integrations/vectorstores/weaviate) (with OpenAI's embeddings).
 
-Question-Answering has the following steps, all handled by [OpenAIFunctionsAgent](https://python.langchain.com/docs/modules/agents/agent_types/openai_functions_agent):
+Question-Answering has the following steps:
 
-1. Given the chat history and new user input, determine what a standalone question would be (using GPT-3.5).
+1. Given the chat history and new user input, determine what a standalone question would be using an LLM.
 2. Given that standalone question, look up relevant documents from the vectorstore.
-3. Pass the standalone question and relevant documents to GPT-4 to generate and stream the final answer.
+3. Pass the standalone question and relevant documents to the model to generate and stream the final answer.
 4. Generate a trace URL for the current chat session, as well as the endpoint to collect feedback.
 
-## 🚀 Deployment
+## Documentation
 
-Deploy the frontend Next.js app as a serverless Edge function on Vercel [by clicking here]().
-You'll need to populate the `NEXT_PUBLIC_API_BASE_URL` environment variable with the base URL you've deployed the backend under (no trailing slash!).
+Looking to use or modify this Use Case Accelerant for your own needs? We've added a few docs to aid with this:
 
-Blog Posts:
-* [Initial Launch](https://blog.langchain.dev/langchain-chat/)
-* [Streaming Support](https://blog.langchain.dev/streaming-support-in-langchain/)
+- **[Concepts](./CONCEPTS.md)**: A conceptual overview of the different components of Chat LangChain. Goes over features like ingestion, vector stores, query analysis, etc.
+- **[Modify](./MODIFY.md)**: A guide on how to modify Chat LangChain for your own needs. Covers the frontend, backend and everything in between.
+- **[LangSmith](./LANGSMITH.md)**: A guide on adding robustness to your application using LangSmith. Covers observability, evaluations, and feedback.
+- **[Production](./PRODUCTION.md)**: Documentation on preparing your application for production usage. Explains different security considerations, and more.
+- **[Deployment](./DEPLOYMENT.md)**: How to deploy your application to production. Covers setting up production databases, deploying the frontend, and more.

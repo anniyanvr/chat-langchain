@@ -1,8 +1,11 @@
-.PHONY: start
-start:
-	uvicorn main:app --reload --port 8080
+.PHONY: start, format, lint
 
-.PHONY: format
 format:
-	black .
-	isort .
+	poetry run ruff format .
+	poetry run ruff --select I --fix .
+
+lint:
+	poetry run ruff .
+	poetry run ruff format . --diff
+	poetry run ruff --select I .
+

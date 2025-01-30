@@ -141,3 +141,17 @@ langchain.readthedocs.io/
 
 bin/
 pyvenv.cfg
+node_modules/
+.envrc
+
+.yarn/*
+.yarn/install-state.gz
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+notebooks
+
+.langgraph-data/
